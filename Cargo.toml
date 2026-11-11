@@ -1,0 +1,25 @@
+[package]
+name = "folio"
+version = "0.1.0"
+edition = "2024"
+description = "A native Markdown viewer and light editor for macOS"
+license = "MIT"
+repository = "https://github.com/nickj/folio"
+
+[dependencies]
+rune = { git = "https://github.com/anomalyco/rune", rev = "85cd8c6b797f68d600f9f3c1cd3ce074e4415ddb", default-features = false, features = ["accessibility", "metal-backend", "native-file-dialog", "svg"] }
+rune-kit = { git = "https://github.com/anomalyco/rune", rev = "85cd8c6b797f68d600f9f3c1cd3ce074e4415ddb", features = ["markdown", "mermaid"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+url = "2"
+tempfile = "3"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = "0.5.2"
+objc2-foundation = { version = "0.2.2", features = ["NSAppleEventManager", "NSAppleEventDescriptor", "NSAutoreleasePool", "NSURL", "NSString", "NSThread"] }
+objc2-app-kit = { version = "0.2.2", features = ["NSApplication", "NSAlert", "NSWindow", "NSResponder"] }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+strip = "debuginfo"

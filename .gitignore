@@ -1,0 +1,37 @@
+# Rust outputs (target may be a symlink to a local build cache).
+/target
+/coverage/
+*.profraw
+*.profdata
+/lcov.info
+
+# App bundles, packages, and local rendering/test artifacts.
+/dist/
+/artifacts/
+*.app/
+*.dSYM/
+*.dmg
+*.pkg
+*.log
+
+# Local document state and credentials.
+drafts.json
+recents.json
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+*.mobileprovision
+*.provisionprofile
+
+# macOS and editor scratch files.
+.DS_Store
+.AppleDouble
+.LSOverride
+.idea/
+*.swp
+*.swo
+*~

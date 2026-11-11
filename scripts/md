@@ -1,0 +1,30 @@
+#!/bin/bash
+set -euo pipefail
+app="$HOME/bin/apps/Folio.app"
+case "${1:-}" in
+  -h|--help)
+    printf 'Usage: md [FILE.md …]\n\nOpen Markdown files in Folio. With no arguments, open the app.\n'
+    exit 0 ;;
+  --) shift ;;
+esac
+if [[ ! -d "$app" ]]; then
+  printf 'md: Folio is not installed at %s\n' "$app" >&2
+  exit 1
+fi
+files=()
+for file in "$@"; do
+  if [[ ! -f "$file" ]]; then
+    printf 'md: not a file: %s\n' "$file" >&2
+    exit 1
+  fi
+  # Absolute paths also protect filenames beginning with a dash from open's option parser.
+  case "$file" in
+    /*) files+=("$file") ;;
+    *) files+=("$PWD/$file") ;;
+  esac
+done
+if (( ${#files[@]} )); then
+  exec /usr/bin/open -a "$app" "${files[@]}"
+else
+  exec /usr/bin/open -a "$app"
+fi
