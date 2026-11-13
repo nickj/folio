@@ -110,6 +110,9 @@ impl SplitSync {
         // Observe its extent/offset only. Preview input never schedules a source scroll.
         self.0.borrow_mut().preview = Some(at);
     }
+    pub fn preview_navigated(&self) {
+        self.0.borrow_mut().pending = None;
+    }
     pub fn edited(&self, byte: usize) {
         self.0.borrow_mut().pending = Some(Follow::Edit {
             byte,

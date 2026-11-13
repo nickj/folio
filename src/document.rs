@@ -24,6 +24,7 @@ pub struct Document {
     pub newlines: Newlines,
     pub bom: bool,
     pub split_sync: crate::split_sync::SplitSync,
+    pub outline: crate::outline::Outline,
     observed: Option<(std::time::SystemTime, u64)>,
 }
 
@@ -39,6 +40,7 @@ impl Document {
             bom: false,
             observed: None,
             split_sync: Default::default(),
+            outline: Default::default(),
         }
     }
     pub fn open(id: u64, path: &Path) -> Result<Self, String> {
@@ -77,6 +79,7 @@ impl Document {
             bom,
             observed: meta.modified().ok().map(|time| (time, meta.len())),
             split_sync: Default::default(),
+            outline: Default::default(),
         })
     }
     pub fn title(&self) -> String {

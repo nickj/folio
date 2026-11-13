@@ -20,6 +20,7 @@
 Open a Markdown file, read it, make a quick change. Choose **Preview**, **Edit**, or **Split**—the document stays a plain file on disk.
 
 - **Readable Markdown.** Tables, task lists, syntax-highlighted code, Mermaid diagrams, and local images.
+- **Heading outline.** A faint outline in the preview expands on hover. Move over headings to magnify them, then click to jump to a section.
 - **One-way split sync.** Source edits and scrolling guide the preview. Scrolling the preview leaves the editor where it is.
 - **Keyboard navigation.** Search app commands, fuzzy-find recent files, and preview tabs before switching.
 - **Native file handling.** Open from Finder, drop files into the window, or use `md` in Terminal.
@@ -65,6 +66,8 @@ md notes.md "Project plan.md"
 | ⌘W | Close document |
 
 **Command palette:** file actions, editing and clipboard commands, search, views, appearance, open tabs, and window controls. Type to filter, use ↑/↓ to select, and Return to run.
+
+**Heading outline:** choose **Focus Outline** from the command palette for keyboard navigation. Use ↑/↓ or Home/End to select a heading, Return to jump, and Escape to leave. Long outlines scroll independently of the document.
 
 **Recent documents:** fuzzy matches filenames and paths. An empty query shows the most recently opened files first.
 

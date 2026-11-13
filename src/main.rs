@@ -4,6 +4,8 @@ mod document;
 mod fuzzy;
 #[cfg(target_os = "macos")]
 mod macos;
+mod outline;
+mod outline_ui;
 mod palette;
 mod palette_ui;
 mod recent;
@@ -105,6 +107,8 @@ fn main() {
     application.run();
 }
 
+#[cfg(test)]
+mod outline_tests;
 #[cfg(test)]
 mod palette_tests;
 #[cfg(test)]

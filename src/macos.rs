@@ -59,6 +59,15 @@ extern "C" fn launching(handler: &AnyObject, _: Sel, _: *mut AnyObject) {
     }
 }
 
+pub fn reduce_transparency() -> bool {
+    autoreleasepool(|_| unsafe {
+        let workspace: *mut AnyObject = msg_send![class!(NSWorkspace), sharedWorkspace];
+        let reduce: objc2::runtime::Bool =
+            msg_send![workspace, accessibilityDisplayShouldReduceTransparency];
+        reduce.as_bool()
+    })
+}
+
 pub fn reveal_file(path: &std::path::Path) {
     // Called on the UI thread after a palette/menu action; no shell interpolation.
     autoreleasepool(|_| unsafe {

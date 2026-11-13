@@ -16,6 +16,7 @@ pub enum Requires {
     MultipleTabs,
     Recent,
     Matches,
+    Headings,
 }
 
 pub struct Command {
@@ -68,6 +69,12 @@ impl Command {
             Requires::MultipleTabs => s.docs.len() > 1,
             Requires::Recent => !s.recent.paths().is_empty(),
             Requires::Matches => !s.matches.is_empty(),
+            Requires::Headings => !s
+                .doc()
+                .outline
+                .snapshot(&s.doc().edit.text)
+                .headings
+                .is_empty(),
         }
     }
     pub fn key_hint(&self) -> String {
@@ -191,6 +198,15 @@ pub static ALL: &[Command] = &[
         .keywords("write markdown"),
     Command::new("split", "Split View", "View", Some("cmd+3"), app::split)
         .keywords("side by side preview editor"),
+    Command::new(
+        "outline",
+        "Focus Outline",
+        "View",
+        None,
+        crate::outline::focus,
+    )
+    .requires(Requires::Headings)
+    .keywords("headings sections table of contents navigation"),
     Command::new(
         "zoom-in",
         "Larger Text",

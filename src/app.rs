@@ -38,6 +38,7 @@ pub struct State {
     pub confirm: Option<Confirm>,
     pub zoom: f32,
     pub appearance: Option<bool>,
+    pub reduce_transparency: bool,
     pub cache: Option<Arc<ImageCache>>,
     pub images: Rc<RefCell<HashMap<PathBuf, Image>>>,
     image_stamp: usize,
@@ -88,6 +89,7 @@ impl State {
             confirm: None,
             zoom: 1.0,
             appearance: None,
+            reduce_transparency: false,
             cache: None,
             images: Rc::new(RefCell::new(HashMap::new())),
             image_stamp: 0,
@@ -310,31 +312,44 @@ pub fn is_markdown(p: &Path) -> bool {
 pub fn setup(s: &mut State, wake: rune::Waker) {
     s.wake = Some(wake.clone());
     s.cache = Some(Arc::new(ImageCache::new(wake)));
+    #[cfg(target_os = "macos")]
+    if !s.headless {
+        s.reduce_transparency = crate::macos::reduce_transparency();
+    }
 }
 pub fn poll(s: &mut State, clock: f64, tx: &mut Tx) -> bool {
+    let outline_changed = crate::outline::poll(s, tx);
     if s.mode == Mode::Split {
         s.doc().split_sync.apply(tx);
     }
     let stamp = s.images.borrow().values().filter(|i| i.is_ready()).count();
-    let mut changed = stamp != s.image_stamp;
+    let mut changed = stamp != s.image_stamp || outline_changed;
     s.image_stamp = stamp;
     if !s.headless && clock - s.last_disk_check >= 1.0 {
         s.last_disk_check = clock;
+        #[cfg(target_os = "macos")]
+        {
+            let reduce = crate::macos::reduce_transparency();
+            changed |= reduce != s.reduce_transparency;
+            s.reduce_transparency = reduce;
+        }
+        let mut disk_changed = false;
         for doc in &mut s.docs {
             match doc.reload_if_changed() {
-                Ok(reloaded) => changed |= reloaded,
+                Ok(reloaded) => disk_changed |= reloaded,
                 Err(error) if s.error.as_ref() != Some(&error) => {
                     s.error = Some(error);
-                    changed = true;
+                    disk_changed = true;
                 }
                 Err(_) => {}
             }
         }
-        if changed {
+        if disk_changed {
             s.refresh_search();
             s.title(tx);
             tx.instant();
         }
+        changed |= disk_changed;
     }
     if !s.headless {
         tx.wake_after(std::time::Duration::from_secs_f64(

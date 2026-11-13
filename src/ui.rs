@@ -528,7 +528,9 @@ fn preview(s: &State, cx: &mut Cx<State>, k: &Kit, sync_lines: &[crate::split_sy
             )
         });
     }
-    col()
+    let outline = s.doc().outline.clone();
+    let wake = s.wake.clone();
+    let mut pane = col()
         .key("preview-pane")
         .grow(1.0)
         .h_full()
@@ -548,6 +550,11 @@ fn preview(s: &State, cx: &mut Cx<State>, k: &Kit, sync_lines: &[crate::split_sy
                     if split {
                         sync.preview_scrolled(at);
                     }
+                    if outline.preview_scrolled(at)
+                        && let Some(wake) = &wake
+                    {
+                        wake();
+                    }
                 })
                 .child(
                     col().w_full().px(40.0).pt(44.0).pb(90.0).child(
@@ -559,7 +566,11 @@ fn preview(s: &State, cx: &mut Cx<State>, k: &Kit, sync_lines: &[crate::split_sy
                     ),
                 )
                 .scroll_bar(k),
-        )
+        );
+    if let Some(outline) = crate::outline_ui::build(s, cx, k) {
+        pane = pane.child(outline);
+    }
+    pane.clip_rounded(0.0)
 }
 
 fn findbar(s: &State, k: &Kit) -> El {
